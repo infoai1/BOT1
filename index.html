@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPS Wisdom Bot</title>
+    <!-- Using Tailwind CSS for styling to match the original UI -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* --- Hide third-party branding: RAGFlow (Primary Method) --- */
+        /* This is the most direct and efficient way to hide the logo.
+           It targets the parent container of the logo image, ensuring
+           that the entire element and its spacing are removed. */
+        div:has(> img[alt="RAGFlow"]) {
+            display: none !important;
+        }
+
+        /* --- Defensive/Fallback CSS Rules --- */
+        /* These more generic rules catch other potential ways the branding
+           might be rendered, as outlined in your plan. */
+        img[alt*="RAGFlow" i],
+        [class*="ragflow" i] {
+            display: none !important;
+        }
+
+        /* --- Optional: Style for a replacement CPS logo --- */
+        .cps-logo-container {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1rem; /* Adjust padding as needed */
+            height: 64px; /* Matches typical header height */
+        }
+        .cps-logo-container .logo-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1F2937; /* text-gray-800 */
+            margin-left: 0.75rem;
+        }
+        .cps-logo-container svg {
+             width: 32px;
+             height: 32px;
+        }
+
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="flex flex-col w-64 bg-white border-r">
+            <!--
+              STEP 1: HIDE THE ORIGINAL BRANDING
+              The CSS rule 'div:has(> img[alt="RAGFlow"])' will find and hide
+              the entire div container below.
+            -->
+            <div class="flex-shrink-0 flex items-center px-4 h-16">
+                <!-- This is the original RAGFlow branding element to be hidden -->
+                <img class="h-8 w-auto" src="https://placehold.co/150x40/000000/FFFFFF?text=RAGFlow" alt="RAGFlow">
+            </div>
+
+            <!--
+              STEP 2 (OPTIONAL): REPLACE WITH YOUR OWN LOGO
+              Uncomment the block below to add your "CPS Wisdom Bot" branding in its place.
+            -->
+            <!--
+            <div class="cps-logo-container">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="text-blue-600">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V8.25a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 8.25v7.5A2.25 2.25 0 0 0 6.75 18Z" />
+                </svg>
+                <span class="logo-text">CPS Wisdom Bot</span>
+            </div>
+            -->
+
+            <!-- Sidebar Navigation (mock) -->
+            <nav class="flex-1 px-2 py-4 space-y-1">
+                <a href="#" class="bg-gray-200 text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                    Chat
+                </a>
+                <a href="#" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                    History
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 p-8">
+            <h1 class="text-2xl font-bold">CPS Wisdom Bot</h1>
+            <p class="text-gray-600">Your intelligent assistant.</p>
+            <div class="mt-4 p-6 bg-white rounded-lg shadow-md">
+                <p>Chat functionality would be here...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Defensive JavaScript Fallback to Remove Branding ---
+        // This script runs after the page loads and acts as a backup to the CSS.
+        // It actively removes any elements that match the branding signature,
+        // which is useful if the branding is loaded dynamically after the initial CSS render.
+        (function hideRagflowBranding() {
+            const signature = 'ragflow';
+
+            const removeNode = (node) => {
+                if (node && node.parentElement) {
+                    console.log('JS Fallback: Removing branding node:', node);
+                    // Hide the parent for better layout collapse, similar to the CSS strategy
+                    node.parentElement.style.display = 'none';
+                }
+            };
+
+            const sweepAndRemove = () => {
+                // First, try the most specific selector for performance
+                const specificElement = document.querySelector('img[alt="RAGFlow"]');
+                if (specificElement) {
+                    removeNode(specificElement);
+                    return; // Stop if we found the primary target
+                }
+
+                // If not found, run a broader search on all elements
+                document.querySelectorAll('*').forEach(el => {
+                    const content = `${el.alt || ''} ${el.title || ''} ${el.className || ''} ${el.id || ''}`.toLowerCase();
+                    if (content.includes(signature)) {
+                        removeNode(el);
+                    }
+                });
+            };
+
+            // Run when the initial HTML document has been completely loaded and parsed
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', sweepAndRemove);
+            } else {
+                sweepAndRemove();
+            }
+
+            // Set up a MutationObserver to watch for elements added to the page later.
+            // This is robust for Single Page Applications (SPAs) where content changes.
+            const observer = new MutationObserver((mutations) => {
+                for (const mutation of mutations) {
+                    if (mutation.addedNodes.length > 0) {
+                       const found = Array.from(mutation.addedNodes).some(node =>
+                            node.nodeType === 1 && (
+                                (node.matches && node.matches('img[alt="RAGFlow"]')) ||
+                                (node.querySelector && node.querySelector('img[alt="RAGFlow"]'))
+                            )
+                       );
+                       if (found) {
+                           sweepAndRemove();
+                       }
+                    }
+                }
+            });
+
+            // Start observing the entire document for changes
+            observer.observe(document.documentElement, {
+                childList: true,
+                subtree: true
+            });
+        })();
+    </script>
+
+</body>
+</html>
